@@ -1,0 +1,48 @@
+name: Bump version
+on:
+  push:
+    branches:
+      - main
+jobs:
+  tag_and_push_image:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: '0'
+    - name: Bump version and push tag
+      id: create_github_tag
+      uses: anothrNick/github-tag-action@1.36.0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        WITH_V: true
+    - name: Log in to Docker Hub
+      uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+    - name: Build and push Docker image
+      uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+      with:
+        context: .
+        push: true
+        tags: "jwr0/fargate-dns-updater:${{ steps.create_github_tag.outputs.tag }},jwr0/fargate-dns-updater:latest"
+    - name: Create an issue if any step failed
+      if: failure()
+      run: |
+        curl --request POST \
+        --url https://api.github.com/repos/${{ github.repository }}/issues \
+        --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
+        --header 'content-type: application/json' \
+        --data '{
+          "title": "Issue created due to workflow failure: ${{ github.run_id }}",
+          "body": "This issue was automatically created by the GitHub Action workflow **${{ github.workflow }}**. \n\n due to failure in run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}."
+          }'
+    - name: Rollback tag if any step failed
+      if: failure()
+      uses: dev-drprasad/delete-tag-and-release@v0.2.0
+      with:
+        delete_release: false # this project only uses tags, not releases
+        tag_name: ${{ steps.create_github_tag.outputs.tag }} # tag name to delete
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

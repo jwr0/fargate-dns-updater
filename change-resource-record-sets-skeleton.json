@@ -1,0 +1,18 @@
+{
+  "Comment": "This change is made by the fargate-dns-updater sidecar.",
+  "Changes": [
+    {
+      "Action": "UPSERT",
+      "ResourceRecordSet": {
+        "Name": "DNS domain name",
+        "Type": "A",
+        "TTL": "time to live in seconds",
+        "ResourceRecords": [
+          {
+            "Value": "applicable value for the record type"
+          }
+        ]
+      }
+    }
+  ]
+}

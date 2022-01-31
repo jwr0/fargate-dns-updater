@@ -39,7 +39,7 @@ cat change-resource-record-sets-skeleton.json | jq \
 --arg IP "$IP" \
 --arg TTL "$TTL" \
 '.Changes[0].ResourceRecordSet.Name = $DNS_NAME |
- .Changes[0].ResourceRecordSet.TTL = $TTL |
+ .Changes[0].ResourceRecordSet.TTL = ( $TTL | tonumber ) |
  .Changes[0].ResourceRecordSet.ResourceRecords[0].Value = $IP' \
 > change-resource-record-sets.json
 

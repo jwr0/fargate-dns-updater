@@ -3,6 +3,12 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      # Don't build a new Docker image if we change only one of the below file paths
+      - '.github/**'
+      - LICENSE
+      - README.md
+
 jobs:
   tag_and_push_image:
     runs-on: ubuntu-latest

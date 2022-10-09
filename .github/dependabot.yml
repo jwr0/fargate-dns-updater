@@ -9,8 +9,12 @@ updates:
     directory: "/"
     schedule:
       interval: "monthly"
+    reviewers:
+      - jwr0
 
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "monthly"
+    reviewers:
+      - jwr0

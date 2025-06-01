@@ -46,7 +46,7 @@ jobs:
           }'
     - name: Rollback tag if any step failed
       if: failure()
-      uses: dev-drprasad/delete-tag-and-release@v0.2.0
+      uses: dev-drprasad/delete-tag-and-release@v1.0.1
       with:
         delete_release: false # this project only uses tags, not releases
         tag_name: ${{ steps.create_github_tag.outputs.tag }} # tag name to delete
